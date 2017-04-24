@@ -7,28 +7,49 @@
 #    http://shiny.rstudio.com/
 #
 
-library(shiny)
+library(shinythemes)
 library(leaflet)
 
+
 # Define UI for application that draws a histogram
-shinyUI(navbarPage("Scinetometric Analysis: interpreting domain", id="nav",
-  
+#,theme = shinytheme("cosmo")
+shinyUI(navbarPage("Scinetometric Analysis: interpreting domain", id="nav", collapsable = T,
   # Application title
-  #titlePanel("Geospatial location of lead authors"),
+  # titlePanel("Geospatial location of lead authors"),
     
   # Sidebar with a slider input for number of bins 
   
   tabPanel("Interactive map",
+           # h4("GeoSpatial Location of Lead Authors"),
            div(class="outer",
-               
                tags$head(
                  # Include our custom CSS
-                 includeCSS("./static/style.css")
+                 includeCSS("./static/style.css"),
+                 includeScript("./static/gomap.js")
                   
                ),#tag$head
            leafletOutput("map", width="100%", height="100%")
-           )
-    #actionButton("recalc", "New points")
-  )#tabPanel:Interactive map
+           ) # div
+  ), # tabPanel:Interactive map
   
-))
+  tabPanel("Topical Analysis",
+           h4("WordCloud in Interpreting Journal"),
+           verticalLayout(
+             plotOutput("wordCloud"),
+             p("World Cloud: Tweaks"),
+             wellPanel(
+               sliderInput("max_words", "Maximum number of words", min= 30, max = nrow(words), value = 50),
+               sliderInput("min_freq", "Minimum Weight of words", min = 1, max= max(words$count), value=2)
+             )    
+           ) # verticalayout
+                    
+  ), #tabPanel: Topical Analysis
+  tabPanel("Data explorer",
+
+           
+           hr(),
+           DT::dataTableOutput("datatable")
+  )
+)) # navbar shiny UI
+
+
